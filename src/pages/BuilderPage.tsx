@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Download, ArrowLeft, LayoutTemplate, RotateCcw } from 'lucide-react';
-import { ResumeData, TemplateType } from '@/types';
+import { Download, ArrowLeft, LayoutTemplate, RotateCcw, ChevronDown, GripVertical } from 'lucide-react';
+import { ResumeData, TemplateType, SectionConfig, DEFAULT_SECTION_ORDER } from '@/types';
 import ResumeForm from '@/components/ResumeForm';
 import AdvancedATSScanner from '@/components/AdvancedATSScanner';
 import PDFATSUploader from '@/components/PDFATSUploader';
 import TemplateSelector from '@/components/TemplateSelector';
+import SectionOrderManager from '@/components/SectionOrderManager';
 import { exportToPDF } from '@/utils/pdfExport';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -199,7 +200,9 @@ const loadResumeData = (): ResumeData => {
   try {
     const savedData = localStorage.getItem(STORAGE_KEY_RESUME_DATA);
     if (savedData) {
-      return JSON.parse(savedData);
+      const parsed = JSON.parse(savedData);
+      // Always reset section order to default (don't persist across refreshes)
+      return { ...parsed, sectionOrder: DEFAULT_SECTION_ORDER };
     }
   } catch (error) {
     console.error('Error loading resume data from localStorage:', error);
@@ -225,11 +228,13 @@ export default function BuilderPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>(loadTemplate);
   const [isExporting, setIsExporting] = useState(false);
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [sectionOrderExpanded, setSectionOrderExpanded] = useState<boolean>(false);
 
-  // Save resume data to localStorage whenever it changes
+  // Save resume data to localStorage whenever it changes (excluding sectionOrder)
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY_RESUME_DATA, JSON.stringify(resumeData));
+      const { sectionOrder, ...dataToSave } = resumeData;
+      localStorage.setItem(STORAGE_KEY_RESUME_DATA, JSON.stringify(dataToSave));
     } catch (error) {
       console.error('Error saving resume data to localStorage:', error);
     }
@@ -276,6 +281,19 @@ export default function BuilderPage() {
         console.error('Error clearing localStorage:', error);
       }
     }
+  };
+
+  // Updates resume data with new section order and visibility configuration
+  const handleSectionOrderChange = (newSectionOrder: SectionConfig[]) => {
+    setResumeData(prevData => ({
+      ...prevData,
+      sectionOrder: newSectionOrder,
+    }));
+  };
+
+  // Toggles collapse/expand state of the section order manager UI component
+  const handleSectionOrderToggle = (isOpen: boolean) => {
+    setSectionOrderExpanded(isOpen);
   };
 
   const getTemplateName = (template: TemplateType): string => {
@@ -396,7 +414,38 @@ export default function BuilderPage() {
                 </Button>
               </div>
             </div>
-            <div className="h-[600px] sm:h-[700px] lg:h-[750px] overflow-y-auto p-4 sm:p-6">
+            <div className="h-[600px] sm:h-[700px] lg:h-[750px] overflow-y-auto p-4 sm:p-6 space-y-6">
+              <div className="border rounded-lg overflow-hidden">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-between p-3 h-auto hover:bg-accent rounded-none"
+                  onClick={() => handleSectionOrderToggle(!sectionOrderExpanded)}
+                >
+                  <span className="flex items-center gap-2 text-sm font-medium">
+                    <GripVertical className="h-4 w-4" />
+                    Customize Section Order
+                  </span>
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform duration-200 ${
+                      sectionOrderExpanded ? 'rotate-180' : ''
+                    }`}
+                  />
+                </Button>
+
+                <div
+                  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    sectionOrderExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <div className="p-4 pt-2">
+                    <SectionOrderManager
+                      sections={resumeData.sectionOrder || DEFAULT_SECTION_ORDER}
+                      onChange={handleSectionOrderChange}
+                    />
+                  </div>
+                </div>
+              </div>
+
               <ResumeForm data={resumeData} onChange={handleDataChange} />
             </div>
           </div>
