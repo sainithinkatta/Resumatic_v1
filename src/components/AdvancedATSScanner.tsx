@@ -284,7 +284,7 @@ export default function AdvancedATSScanner({ data, jobTitle, industry }: Advance
 
     // Check for potential formatting issues (simulated)
     const potentialIssues = ['tables', 'images', 'complex layouts', 'non-standard fonts'];
-    formatAnalysis.potentialIssues = potentialIssues.filter(issue => Math.random() > 0.7); // Simulated detection
+    formatAnalysis.potentialIssues = potentialIssues.filter(_issue => Math.random() > 0.7); // Simulated detection
     formatScore -= formatAnalysis.potentialIssues.length * 10;
 
     if (formatAnalysis.potentialIssues.length > 0) {

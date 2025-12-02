@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -6,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import { RotateCcw, Settings } from 'lucide-react';
 import { SpacingSettings } from '@/types';
 
+// Props for spacing adjustment controls component
 interface SpacingControlsProps {
-  spacing: SpacingSettings;
-  onChange: (spacing: SpacingSettings) => void;
+  spacing: SpacingSettings; // Current spacing configuration values
+  onChange: (spacing: SpacingSettings) => void; // Callback when spacing values change
 }
 
+// Default spacing values used for reset functionality
 const defaultSpacing: SpacingSettings = {
   pageMargin: 20,
   sectionSpacing: 8,
@@ -19,7 +20,9 @@ const defaultSpacing: SpacingSettings = {
   headerSpacing: 6,
 };
 
+// UI component for fine-tuning page layout and spacing parameters
 export default function SpacingControls({ spacing, onChange }: SpacingControlsProps) {
+  // Updates a single spacing field value while preserving others
   const handleChange = (field: keyof SpacingSettings, value: number) => {
     onChange({
       ...spacing,
@@ -27,6 +30,7 @@ export default function SpacingControls({ spacing, onChange }: SpacingControlsPr
     });
   };
 
+  // Resets all spacing controls to their default values
   const resetToDefault = () => {
     onChange(defaultSpacing);
   };
@@ -50,7 +54,6 @@ export default function SpacingControls({ spacing, onChange }: SpacingControlsPr
       </div>
 
       <div className="space-y-4">
-        {/* Page Margin */}
         <div className="space-y-2">
           <Label htmlFor="pageMargin" className="text-xs">
             Page Margin (mm)
@@ -70,7 +73,6 @@ export default function SpacingControls({ spacing, onChange }: SpacingControlsPr
           </div>
         </div>
 
-        {/* Section Spacing */}
         <div className="space-y-2">
           <Label htmlFor="sectionSpacing" className="text-xs">
             Section Spacing (mm)
@@ -90,7 +92,6 @@ export default function SpacingControls({ spacing, onChange }: SpacingControlsPr
           </div>
         </div>
 
-        {/* Line Spacing */}
         <div className="space-y-2">
           <Label htmlFor="lineSpacing" className="text-xs">
             Line Spacing
@@ -110,7 +111,6 @@ export default function SpacingControls({ spacing, onChange }: SpacingControlsPr
           </div>
         </div>
 
-        {/* Bullet Spacing */}
         <div className="space-y-2">
           <Label htmlFor="bulletSpacing" className="text-xs">
             Bullet Spacing (mm)
@@ -130,7 +130,6 @@ export default function SpacingControls({ spacing, onChange }: SpacingControlsPr
           </div>
         </div>
 
-        {/* Header Spacing */}
         <div className="space-y-2">
           <Label htmlFor="headerSpacing" className="text-xs">
             Header Spacing (mm)

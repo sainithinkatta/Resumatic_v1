@@ -67,7 +67,7 @@ export default function PDFATSUploader({ onParseComplete }: PDFATSUploaderProps)
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       
-      reader.onload = async (e) => {
+      reader.onload = async (_e) => {
         try {
           // const arrayBuffer = e.target?.result as ArrayBuffer;
           
